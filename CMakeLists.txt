@@ -258,7 +258,11 @@ set_target_properties(${dist_targets}
     RUNTIME_OUTPUT_DIRECTORY "${dist_dir}/bin"
 )
 
+IF (NOT INCLUDE_INSTALL_DIR)
+    SET (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/usr/include")
+ENDIF (NOT INCLUDE_INSTALL_DIR)
+
 if (FLATCC_INSTALL)
-    install(DIRECTORY include/flatcc DESTINATION include)
+    install(DIRECTORY include/flatcc DESTINATION ${INCLUDE_INSTALL_DIR})
 endif()
 

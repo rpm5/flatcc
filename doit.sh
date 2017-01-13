@@ -1,0 +1,34 @@
+#!/bin/sh
+
+rm -rf build
+
+mkdir build
+cd build && cmake \
+        -DCMAKE_C_FLAGS_RELEASE:STRING="-DNDEBUG" \
+        -DCMAKE_CXX_FLAGS_RELEASE:STRING="-DNDEBUG" \
+        -DCMAKE_Fortran_FLAGS_RELEASE:STRING="-DNDEBUG" \
+        -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+        -DCMAKE_INSTALL_PREFIX:PATH=/usr \
+        -DINCLUDE_INSTALL_DIR:PATH=/usr/include \
+        -DLIB_INSTALL_DIR:PATH=/usr/lib64 \
+        -DSYSCONF_INSTALL_DIR:PATH=/etc \
+        -DSHARE_INSTALL_PREFIX:PATH=/usr/share \
+        -DLIB_SUFFIX=64 \
+        -DBUILD_SHARED_LIBS:BOOL=ON \
+    -DFLATCC_PORTABLE=OFF \
+    -DFLATCC_RTONLY=OFF \
+    -DFLATCC_INSTALL=ON \
+    -DFLATCC_TEST=ON \
+    -DFLATCC_COVERAGE=OFF \
+    -DFLATCC_DEBUG_VERIFY=OFF \
+    -DFLATCC_REFLECTION=ON \
+    -DFLATCC_NATIVE_OPTIM=OFF \
+    -DFLATCC_FAST_DOUBLE=OFF \
+    -DFLATCC_ALLOW_WERROR=ON \
+    -DFLATCC_IGNORE_CONST_COND=OFF \
+	../
+
+cd build
+make && make test && sudo make install
+cd ..
+
