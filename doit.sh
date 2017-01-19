@@ -1,9 +1,6 @@
 #!/bin/sh
 
-rm -rf build
-
-mkdir build
-cd build && cmake \
+cmake \
         -DCMAKE_C_FLAGS_RELEASE:STRING="-DNDEBUG" \
         -DCMAKE_CXX_FLAGS_RELEASE:STRING="-DNDEBUG" \
         -DCMAKE_Fortran_FLAGS_RELEASE:STRING="-DNDEBUG" \
@@ -26,9 +23,7 @@ cd build && cmake \
     -DFLATCC_FAST_DOUBLE=OFF \
     -DFLATCC_ALLOW_WERROR=ON \
     -DFLATCC_IGNORE_CONST_COND=OFF \
-	../
+	.
 
-cd build
 make && make test && sudo make install
-cd ..
 
