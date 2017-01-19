@@ -94,10 +94,10 @@
 #endif
 
 /*
- * Artificial limit on grammar attributes to prevent abuse.
+ * Limit (i.e. sizeof(fb_metadata_flags)) on number of attributes.
  */
 #ifndef FLATCC_ATTR_MAX
-#define FLATCC_ATTR_MAX 100
+#define FLATCC_ATTR_MAX 64
 #endif
 
 #ifndef FLATCC_FORCE_ALIGN_MAX

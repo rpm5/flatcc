@@ -696,6 +696,40 @@ static void parse_type(fb_parser_t *P, fb_value_t *v)
     }
 }
 
+/* ':' must already be matched */
+static void parse_attr_type(fb_parser_t *P, fb_value_t *v)
+{
+    switch (P->token->id) {
+    case tok_kw_byte:
+    case tok_kw_short:
+    case tok_kw_int:
+    case tok_kw_long:
+	v->type = vt_int;
+        break;
+    case tok_kw_ubyte:
+    case tok_kw_ushort:
+    case tok_kw_uint:
+    case tok_kw_ulong:
+	v->type = vt_uint;
+        break;
+    case tok_kw_bool:
+	v->type = vt_bool;
+        break;
+    case tok_kw_float:
+    case tok_kw_double:
+	v->type = vt_float;
+        break;
+    case tok_kw_string:
+	v->type = vt_string;
+        break;
+    default:
+	v->type = vt_invalid;
+        error_tok(P, P->token, "invalid attribute type specifier");
+        break;
+    }
+    next(P);
+}
+
 static fb_metadata_t *parse_metadata(fb_parser_t *P)
 {
     fb_token_t *t, *t0;
@@ -986,15 +1020,43 @@ static void parse_include(fb_parser_t *P)
 
 static void parse_attribute(fb_parser_t *P, fb_attribute_t *a)
 {
+    static unsigned nattrs = KNOWN_ATTR_COUNT;
     fb_token_t *t = P->token;
 
-    if (match(P, LEX_TOK_STRING_BEGIN, "attribute expected string literal")) {
-        parse_string_literal(P, &a->name.name);
-        if (a->name.name.s.len == 0) {
-            error_tok_as_string(P, t, "attribute name cannot be empty", 0, 0);
-        }
+    if (t->text[0] == '"') {
+	if (match(P, LEX_TOK_STRING_BEGIN, "attribute expected string literal")) {
+	    parse_string_literal(P, &a->name.name);
+	    if (a->name.name.s.len == 0) {
+		error_tok_as_string(P, t, "attribute name cannot be empty", 0, 0);
+	    }
+	}
+    } else {
+	if (!(t = match(P, LEX_TOK_ID, "attribute expected identifier"))) {
+	    goto fail;
+	}
+	a->name.name.t = t;
+	a->name.name.s.s = (char *)t->text;
+	a->name.name.s.len = t->len;
+	a->name.name.type = vt_string;
+	a->type.type = vt_missing;
+	if (optional(P, ':')) {
+	    parse_attr_type(P, &a->type);
+	    if (optional(P, '=')) {
+		if (a->type.type == vt_string &&
+		    match(P, LEX_TOK_STRING_BEGIN, "attribute initializer expected string literal")) {
+		    parse_string_literal(P, &a->type);
+		} else {
+		    parse_value(P, &a->type, allow_id_value, "attribute initializer must be of scalar type");
+		}
+	    }
+	}
+	if (a->type.type > vt_invalid && nattrs < FLATCC_ATTR_MAX)
+	    a->known = nattrs++;
     }
     match(P, ';', "attribute expected ';'");
+    return;
+fail:
+    recover2(P, ';', 1, '}', 0);
 }
 
 static void parse_file_extension(fb_parser_t *P, fb_value_t *v)

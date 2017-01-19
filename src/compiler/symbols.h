@@ -177,6 +177,7 @@ DECLARE_HASH_TABLE(fb_value_set, fb_value_t *)
 DECLARE_HASH_TABLE(fb_symbol_table, fb_symbol_t *)
 DECLARE_HASH_TABLE(fb_scope_table, fb_scope_t *)
 
+typedef uint64_t fb_metadata_flags;
 struct fb_member {
     fb_symbol_t symbol;
     /* Struct or table field type, or method response type. */
@@ -186,7 +187,7 @@ struct fb_member {
     fb_value_t value;
     fb_metadata_t *metadata;
     fb_doc_t *doc;
-    uint16_t metadata_flags;
+    fb_metadata_flags metadata_flags;
     /*
      * `align`, `offset` are for structs only.  64-bit allows for
      * dynamically configured 64-bit file offsets. Align is restricted to
@@ -235,7 +236,7 @@ struct fb_compound_type {
     fb_value_set_t value_set;
     /* FNV-1a 32 bit hash of fully qualified name, accidental 0 maps to hash(""). */
     uint32_t type_hash;
-    uint16_t metadata_flags;
+    fb_metadata_flags metadata_flags;
     /* `count` is for tables only. */
     uint64_t count;
     /* `align`, `size` is for structs only. */
@@ -274,11 +275,13 @@ enum fb_known_attribute_flags {
     fb_f_nested_flatbuffer = 1 << fb_attr_nested_flatbuffer,
     fb_f_key = 1 << fb_attr_key,
     fb_f_required = 1 << fb_attr_required,
-    fb_f_hash = 1 << fb_attr_hash
+    fb_f_hash = 1 << fb_attr_hash,
+    KNOWN_ATTR_MASK = (1 << KNOWN_ATTR_COUNT) - 1
 };
 
 struct fb_attribute {
     fb_name_t name;
+    fb_value_t type;
     unsigned int known;
 };
 

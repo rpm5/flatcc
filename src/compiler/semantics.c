@@ -303,6 +303,7 @@ static void install_known_attributes(fb_parser_t *P)
         a->name.name.s.len = (long)strlen(fb_known_attribute_names[i]);
         a->name.name.type = vt_string;
         a->name.link = 0;
+	a->type.type = fb_known_attribute_types[i];
         if ((a = (fb_attribute_t *)define_fb_name(&P->schema.root_schema->attribute_index, &a->name))) {
             /*
              * If the user alredy defined the attribute, keep that instead.
@@ -325,8 +326,8 @@ static void revert_order(fb_compound_type_t **list) {
     *list = prev;
 }
 
-static inline unsigned short process_metadata(fb_parser_t *P, fb_metadata_t *m,
-        unsigned short expect, fb_metadata_t *out[KNOWN_ATTR_COUNT])
+static inline fb_metadata_flags process_metadata(fb_parser_t *P, fb_metadata_t *m,
+        unsigned short expect, fb_metadata_t *out[FLATCC_ATTR_MAX])
 {
     unsigned short flags;
     int n = FLATCC_ATTR_MAX;
@@ -334,7 +335,7 @@ static inline unsigned short process_metadata(fb_parser_t *P, fb_metadata_t *m,
     int type;
     fb_attribute_t *a;
 
-    memset(out, 0, sizeof(out[0]) * KNOWN_ATTR_COUNT);
+    memset(out, 0, sizeof(out[0]) * FLATCC_ATTR_MAX);
     for (flags = 0; m && n; --n, m = m->link) {
         a = (fb_attribute_t *)find_fb_name_by_token(&P->schema.root_schema->attribute_index, m->ident);
         if (!a) {
@@ -344,7 +345,7 @@ static inline unsigned short process_metadata(fb_parser_t *P, fb_metadata_t *m,
         if (!(i = a->known)) {
             continue;
         }
-        if (!((1 << i) & expect)) {
+        if (i < KNOWN_ATTR_COUNT && !((1 << i) & expect)) {
             error_tok(P, m->ident, "known attribute not expected in this context");
             continue;
         }
@@ -354,7 +355,7 @@ static inline unsigned short process_metadata(fb_parser_t *P, fb_metadata_t *m,
             continue;
         }
         out[i] = m;
-        type = fb_known_attribute_types[i];
+        type = a->type.type;
         if (type == vt_missing && m->value.type != vt_missing) {
             error_tok(P, m->ident, "known attribute does not expect a value");
             continue;
@@ -373,6 +374,10 @@ static inline unsigned short process_metadata(fb_parser_t *P, fb_metadata_t *m,
         }
         if (type == vt_bool && m->value.type != vt_bool) {
             error_tok(P, m->ident, "known attribute expects 'true' or 'false'");
+            continue;
+        }
+        if (type == vt_float && m->value.type != vt_float) {
+            error_tok(P, m->ident, "known attribute expects a float");
             continue;
         }
     }
@@ -566,7 +571,7 @@ static int process_struct(fb_parser_t *P, fb_compound_type_t *ct)
 {
     fb_symbol_t *sym, *old, *type_sym;
     fb_member_t *member;
-    fb_metadata_t *knowns[KNOWN_ATTR_COUNT], *m;
+    fb_metadata_t *knowns[FLATCC_ATTR_MAX], *m;
     uint16_t allow_flags;
     int key_count = 0;
 
@@ -671,7 +676,7 @@ static int process_table(fb_parser_t *P, fb_compound_type_t *ct)
 {
     fb_symbol_t *sym, *old, *type_sym;
     fb_member_t *member;
-    fb_metadata_t *knowns[KNOWN_ATTR_COUNT], *m;
+    fb_metadata_t *knowns[FLATCC_ATTR_MAX], *m;
     int ret = 0;
     uint64_t count = 0;
     int need_id = 0, id_failed = 0;
@@ -1003,7 +1008,7 @@ static int process_rpc_service(fb_parser_t *P, fb_compound_type_t *ct)
     fb_symbol_t *sym, *old, *type_sym;
     fb_member_t *member;
 #if FLATCC_ALLOW_RPC_SERVICE_ATTRIBUTES || FLATCC_ALLOW_RPC_METHOD_ATTRIBUTES
-    fb_metadata_t *knowns[KNOWN_ATTR_COUNT];
+    fb_metadata_t *knowns[FLATCC_ATTR_MAX];
 #endif
 
     assert(ct->symbol.kind == fb_is_rpc_service);
@@ -1099,7 +1104,7 @@ static int process_enum(fb_parser_t *P, fb_compound_type_t *ct)
 {
     fb_symbol_t *sym, *old, *type_sym;
     fb_member_t *member;
-    fb_metadata_t *knowns[KNOWN_ATTR_COUNT];
+    fb_metadata_t *knowns[FLATCC_ATTR_MAX];
     fb_value_t index;
     fb_value_t old_index;
     int first = 1;
