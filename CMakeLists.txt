@@ -144,6 +144,8 @@ if (CMAKE_C_COMPILER_ID MATCHES "Clang")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-tautological-constant-out-of-range-compare")
     endif()
 
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -DPIC -fPIE")
+
     # To get assembly output
     # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -save-temps")
 
@@ -166,6 +168,8 @@ elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU")
     if (FLATCC_IGNORE_CONST_COND)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-type-limits")
     endif()
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -DPIC -fPIE")
 
     # In gcc 4.8 it is not possible to suppress this warning using
     # #pragma GCC diagnostic ignored "-Wunused-function"

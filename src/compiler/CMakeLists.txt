@@ -34,7 +34,8 @@ if (FLATCC_REFLECTION)
     set (SOURCES ${SOURCES} codegen_schema.c)
 endif(FLATCC_REFLECTION)
 
-add_library(flatcc ${SOURCES})
+add_library(flatcc SHARED ${SOURCES})
+add_library(flatcc-static STATIC ${SOURCES})
 
 if (FLATCC_INSTALL)
     install(TARGETS flatcc DESTINATION lib${LIB_SUFFIX})
