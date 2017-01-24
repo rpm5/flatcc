@@ -56,6 +56,7 @@
 
 #include "../symbols.h"
 
+FLATCC_GNUC_PURE
 static inline size_t scope_hash(const void *s, size_t len);
 #define HT_HASH_FUNCTION scope_hash
 
@@ -64,6 +65,7 @@ DEFINE_HASH_TABLE(fb_scope_table)
 #include "hash/hash_table_impl.h"
 
 /* Null is a valid key used for root scopes. */
+FLATCC_GNUC_PURE
 static inline int ht_match(const void *key, size_t len, fb_scope_t *scope)
 {
     const fb_ref_t *name = scope->name;
@@ -139,6 +141,7 @@ static inline size_t ht_key_len(fb_scope_t *scope)
     return 0;
 }
 
+FLATCC_GNUC_PURE
 static inline size_t scope_hash(const void *key, size_t len)
 {
     size_t h = 0, i;

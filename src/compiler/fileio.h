@@ -2,6 +2,7 @@
 #define FILES_H
 
 #include <stdlib.h>
+#include "flatcc/flatcc_defs.h"
 
 /*
  * Returns an allocated copy of the path truncated to len if len is
@@ -76,10 +77,12 @@ char *__flatcc_fb_read_file(const char *filename, size_t max_size, size_t *size_
  * Returns offset into source path representing the longest suffix
  * string with no path separator.
  */
+FLATCC_GNUC_PURE
 size_t __flatcc_fb_find_basename(const char *path, size_t len);
 #define fb_find_basename __flatcc_fb_find_basename
 
 /* Returns input length or length reduced by ext len if ext is a proper suffix. */
+FLATCC_GNUC_PURE
 size_t __flatcc_fb_chomp(const char *path, size_t len, const char *ext);
 #define fb_chomp __flatcc_fb_chomp
 

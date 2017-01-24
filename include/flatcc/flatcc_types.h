@@ -7,6 +7,8 @@
 #include <stdint.h>
 #endif
 
+#include "flatcc_defs.h"
+
 /*
  * This should match generated type declaratios in
  * `flatbuffers_common_reader.h` (might have different name prefix).

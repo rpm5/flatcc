@@ -34,6 +34,7 @@
  *
  * Note that we reserve hash value 0 for missing or ignored value.
  */
+FLATCC_GNUC_PURE
 static inline flatbuffers_thash_t flatbuffers_type_hash_from_name(const char *name)
 {
     uint32_t hash = 2166136261UL;

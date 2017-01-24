@@ -438,6 +438,7 @@ int flatcc_builder_custom_init(flatcc_builder_t *B,
  * Returns (flatcc_emitter_t *) if the default context is used.
  * Other emitter might have null contexts.
  */
+FLATCC_GNUC_PURE
 void *flatcc_builder_get_emit_context(flatcc_builder_t *B);
 
 /**
@@ -522,6 +523,7 @@ void flatcc_builder_pop_buffer_alignment(flatcc_builder_t *B, uint16_t buffer_al
  * example when subsequently allocating memory for the buffer to ensure
  * that memory is properly aligned.
  */
+FLATCC_GNUC_PURE
 uint16_t flatcc_builder_get_buffer_alignment(flatcc_builder_t *B);
 
 /**
@@ -534,6 +536,7 @@ uint16_t flatcc_builder_get_buffer_alignment(flatcc_builder_t *B);
  *
  * Level continues to increment inside nested buffers.
  */
+FLATCC_GNUC_PURE
 int flatcc_builder_get_level(flatcc_builder_t *B);
 
 /**
@@ -658,6 +661,7 @@ void *flatcc_builder_start_struct(flatcc_builder_t *B,
  * Return a pointer also returned at start struct, e.g. for endian
  * conversion.
  */
+FLATCC_GNUC_PURE
 void *flatcc_builder_struct_edit(flatcc_builder_t *B);
 
 /**
@@ -798,6 +802,7 @@ enum flatcc_builder_type {
  * after. A `flatcc_builder_struct_buffer` will be visible at level 1.
  *
  */
+FLATCC_GNUC_PURE
 enum flatcc_builder_type flatcc_builder_get_type(flatcc_builder_t *B);
 
 /**
@@ -806,6 +811,7 @@ enum flatcc_builder_type flatcc_builder_get_type(flatcc_builder_t *B);
  * type. get_type_at(B, 0) is always `flatcc_builder_empty` and so are any
  * level above `get_level`.
  */
+FLATCC_GNUC_PURE
 enum flatcc_builder_type flatcc_builder_get_type_at(flatcc_builder_t *B, int level);
 
 /**
@@ -840,11 +846,13 @@ void flatcc_builder_exit_user_frame(flatcc_builder_t *B);
  * Returns a pointer to the start of the inner-most user frame. It is
  * not valid to call if there isn't any fram.
  */
+FLATCC_GNUC_PURE
 void *flatcc_builder_get_user_frame(flatcc_builder_t *B);
 
 /**
  * Returns 1 if there is a user frame, and 0 otherwise.
  */
+FLATCC_GNUC_PURE
 int flatcc_builder_has_user_frame(flatcc_builder_t *B);
 
 
@@ -864,6 +872,7 @@ int flatcc_builder_has_user_frame(flatcc_builder_t *B);
  * vtables are always emitted before tables using them). In all cases
  * the vtables will behave as valid vtables in a flatbuffer.
  */
+FLATCC_GNUC_PURE
 size_t flatcc_builder_get_buffer_size(flatcc_builder_t *B);
 
 /**
@@ -871,6 +880,7 @@ size_t flatcc_builder_get_buffer_size(flatcc_builder_t *B);
  * in total after buffer end, in the virtual address range used
  * by the emitter. Start is also returned by buffer end.
  */
+FLATCC_GNUC_PURE
 flatcc_builder_ref_t flatcc_builder_get_buffer_start(flatcc_builder_t *B);
 
 /**
@@ -1103,6 +1113,7 @@ flatcc_builder_ref_t flatcc_builder_end_table(flatcc_builder_t *B);
  *
  * Returns 1 if all fields are matched, 0 otherwise.
  */
+FLATCC_GNUC_PURE
 int flatcc_builder_check_required(flatcc_builder_t *B, const flatbuffers_voffset_t *required, int count);
 
 /**
@@ -1112,6 +1123,7 @@ int flatcc_builder_check_required(flatcc_builder_t *B, const flatbuffers_voffset
  * array first. Useful when dealing with untrusted intput such as parsed
  * text from an external source.
  */
+FLATCC_GNUC_PURE
 int flatcc_builder_check_required_field(flatcc_builder_t *B, flatbuffers_voffset_t id);
 
 /**
@@ -1132,6 +1144,7 @@ int flatcc_builder_check_required_field(flatcc_builder_t *B, flatbuffers_voffset
  * while the table field should only be checked here because it can
  * (and must) be absent when the type is NONE (= 0).
  */
+FLATCC_GNUC_PURE
 int flatcc_builder_check_union_field(flatcc_builder_t *B, flatbuffers_voffset_t id);
 
 /**
@@ -1179,6 +1192,7 @@ void *flatcc_builder_table_add(flatcc_builder_t *B, int id, size_t size, uint16_
  * used to perform endian conversion after initially updating field
  * as a native struct. Must be called before the table is ended.
  */
+FLATCC_GNUC_PURE
 void *flatcc_builder_table_edit(flatcc_builder_t *B, size_t size);
 
 /**
@@ -1265,12 +1279,14 @@ int flatcc_builder_start_vector(flatcc_builder_t *B, size_t elem_size,
 flatcc_builder_ref_t flatcc_builder_end_vector(flatcc_builder_t *B);
 
 /** Returns the number of elements currently on the stack. */
+FLATCC_GNUC_PURE
 size_t flatcc_builder_vector_count(flatcc_builder_t *B);
 
 /**
  * Returns a pointer ot the first vector element on stack,
  * accessible up to the number of elements currently on stack.
  */
+FLATCC_GNUC_PURE
 void *flatcc_builder_vector_edit(flatcc_builder_t *B);
 
 /**
@@ -1280,12 +1296,14 @@ void *flatcc_builder_vector_edit(flatcc_builder_t *B);
 flatcc_builder_ref_t flatcc_builder_end_offset_vector(flatcc_builder_t *B);
 
 /** Returns the number of elements currently on the stack. */
+FLATCC_GNUC_PURE
 size_t flatcc_builder_offset_vector_count(flatcc_builder_t *B);
 
 /**
  * Returns a pointer ot the first vector element on stack,
  * accessible up to the number of elements currently on stack.
  */
+FLATCC_GNUC_PURE
 void *flatcc_builder_offset_vector_edit(flatcc_builder_t *B);
 
 
@@ -1473,12 +1491,14 @@ int flatcc_builder_truncate_string(flatcc_builder_t *B, size_t len);
 flatcc_builder_ref_t flatcc_builder_end_string(flatcc_builder_t *B);
 
 /** Returns the length of string currently on the stack. */
+FLATCC_GNUC_PURE
 size_t flatcc_builder_string_len(flatcc_builder_t *B);
 
 /**
  * Returns a ponter to the start of the string
  * accessible up the length of string currently on the stack.
  */
+FLATCC_GNUC_PURE
 char *flatcc_builder_string_edit(flatcc_builder_t *B);
 
 

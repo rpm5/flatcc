@@ -68,6 +68,7 @@ static fb_scalar_type_t map_scalar_token_type(fb_token_t *t)
  * Some target C compilers might respect anything above
  * 16 and may reguire that PAD option of the C code generator.
  */
+FLATCC_GNUC_CONST
 static inline int is_valid_align(uint64_t align)
 {
     uint64_t n = 1;
@@ -83,6 +84,7 @@ static inline int is_valid_align(uint64_t align)
     return 0;
 }
 
+FLATCC_GNUC_PURE
 static inline uint64_t fb_align(uint64_t size, uint64_t align)
 {
     assert(is_valid_align(align));
@@ -303,7 +305,7 @@ static void install_known_attributes(fb_parser_t *P)
         a->name.name.s.len = (long)strlen(fb_known_attribute_names[i]);
         a->name.name.type = vt_string;
         a->name.link = 0;
-	a->type.type = fb_known_attribute_types[i];
+        a->type.type = fb_known_attribute_types[i];
         if ((a = (fb_attribute_t *)define_fb_name(&P->schema.root_schema->attribute_index, &a->name))) {
             /*
              * If the user alredy defined the attribute, keep that instead.

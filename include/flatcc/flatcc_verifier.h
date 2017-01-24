@@ -89,6 +89,7 @@ enum flatcc_verify_error_no {
 
 #define flatcc_verify_ok flatcc_verify_error_ok
 
+FLATCC_GNUC_CONST
 const char *flatcc_verify_error_string(int err);
 
 
@@ -141,6 +142,7 @@ typedef int flatcc_union_verifier_f(flatcc_table_verifier_descriptor_t *td,
 int flatcc_verify_struct_as_root(const void *buf, size_t bufsiz, const char *fid,
         uint16_t align, size_t size);
 
+FLATCC_GNUC_PURE
 int flatcc_verify_struct_as_typed_root(const void *buf, size_t bufsiz, flatbuffers_thash_t thash,
         uint16_t align, size_t size);
 
@@ -155,6 +157,7 @@ int flatcc_verify_table_as_typed_root(const void *buf, size_t bufsiz, flatbuffer
  */
 int flatcc_verify_buffer_header(const void *buf, size_t bufsiz, const char *fid);
 
+FLATCC_GNUC_PURE
 int flatcc_verify_typed_buffer_header(const void *buf, size_t bufsiz, flatbuffers_thash_t type_hash);
 
 /*
@@ -163,6 +166,7 @@ int flatcc_verify_typed_buffer_header(const void *buf, size_t bufsiz, flatbuffer
  */
 
 /* Scalar, enum or struct field. */
+FLATCC_GNUC_PURE
 int flatcc_verify_field(flatcc_table_verifier_descriptor_t *td,
         flatbuffers_voffset_t id, uint16_t align, size_t size);
 /* Vector of scalars, enums or structs. */

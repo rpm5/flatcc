@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "config.h"
+#include "flatcc/flatcc_defs.h"
 #include "lex/tokens.h"
 #include "hash/hash_table.h"
 #include "hash/ptr_set.h"

@@ -1602,6 +1602,7 @@ flatcc_builder_ref_t flatcc_builder_get_buffer_start(flatcc_builder_t *B)
     return B->emit_start;
 }
 
+FLATCC_GNUC_PURE
 flatcc_builder_ref_t flatcc_builder_get_buffer_end(flatcc_builder_t *B)
 {
     return B->emit_end;

@@ -142,6 +142,7 @@ __flatbuffers_define_sort_by_string_field(reflection_Enum, name)
 __flatbuffers_define_default_find_by_string_field(reflection_Enum, name)
 __flatbuffers_define_default_scan_by_string_field(reflection_Enum, name)
 #define reflection_Enum_vec_sort reflection_Enum_vec_sort_by_name
+FLATCC_GNUC_PURE
 __flatbuffers_define_vector_field(1, reflection_Enum, values, reflection_EnumVal_vec_t, 1)
 __flatbuffers_define_scalar_field(2, reflection_Enum, is_union, flatbuffers_bool, flatbuffers_bool_t, UINT8_C(0))
 __flatbuffers_define_table_field(3, reflection_Enum, underlying_type, reflection_Type_table_t, 1)
@@ -183,6 +184,7 @@ struct reflection_Object_table { uint8_t unused__; };
 #define reflection_Object_type_identifier "\xbd\x29\x97\xb0"
 static inline size_t reflection_Object_vec_len(reflection_Object_vec_t vec)
 __flatbuffers_vec_len(vec)
+FLATCC_GNUC_PURE
 static inline reflection_Object_table_t reflection_Object_vec_at(reflection_Object_vec_t vec, size_t i)
 __flatbuffers_offset_vec_at(reflection_Object_table_t, vec, i, 0)
 __flatbuffers_table_as_root(reflection_Object)

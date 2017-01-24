@@ -77,6 +77,7 @@ static inline void flatcc_json_printer_set_error(flatcc_json_printer_t *ctx, int
     }
 }
 
+FLATCC_GNUC_CONST
 const char *flatcc_json_printer_error_string(int err);
 
 static inline int flatcc_json_printer_get_error(flatcc_json_printer_t *ctx)
@@ -350,6 +351,7 @@ void flatcc_json_printer_indent(flatcc_json_printer_t *ctx);
 /* Adjust identation level, usually +/-1. */
 void flatcc_json_printer_add_level(flatcc_json_printer_t *ctx, int n);
 /* Returns current identation level (0 is top level). */
+FLATCC_GNUC_PURE
 int flatcc_json_printer_get_level(flatcc_json_printer_t *ctx);
 
 /*
@@ -639,6 +641,7 @@ void flatcc_json_printer_table_as_nested_root(flatcc_json_printer_t *ctx,
         const char *fid,
         flatcc_json_printer_table_f pf);
 
+FLATCC_GNUC_PURE
 int flatcc_json_printer_read_union_type(
         flatcc_json_printer_table_descriptor_t *td,
         int id);

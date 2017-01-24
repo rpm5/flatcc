@@ -63,6 +63,7 @@ enum flatcc_json_parser_error_no {
 #undef XX
 };
 
+FLATCC_GNUC_CONST
 const char *flatcc_json_parser_error_string(int err);
 
 #define flatcc_json_parser_ok flatcc_json_parser_error_ok

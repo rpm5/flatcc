@@ -630,6 +630,7 @@ static int gen_builder_pretext(fb_output_t *out)
     return 0;
 }
 
+FLATCC_GNUC_PURE
 static int get_total_struct_field_count(fb_compound_type_t *ct)
 {
     fb_member_t *member;
@@ -921,6 +922,7 @@ static void gen_builder_struct(fb_output_t *out, fb_compound_type_t *ct)
             nsc, nsc, snt.text, llu(ct->size), ct->align, snt.text, snt.text);
 }
 
+FLATCC_GNUC_PURE
 static int get_create_table_arg_count(fb_compound_type_t *ct)
 {
     fb_member_t *member;

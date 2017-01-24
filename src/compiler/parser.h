@@ -105,6 +105,7 @@ static inline void *new_elem(fb_parser_t *P, int size)
 int __flatcc_fb_print_error(fb_parser_t *P, const char * format, ...);
 #define fb_print_error __flatcc_fb_print_error
 
+FLATCC_GNUC_PURE
 const char *__flatcc_error_find_file_of_token(fb_parser_t *P, fb_token_t *t);
 #define error_find_file_of_token __flatcc_error_find_file_of_token
 
