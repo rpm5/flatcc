@@ -104,7 +104,7 @@ typedef void *flatcc_context_t;
  * A reader file is named after the source base name, e.g.
  * `monster.fbs` becomes `monster.h`. Builders are optional and created
  * as `monster_builder.h`. A reader require a common header
- * `flatbuffers_commoner.h` and a builder requires
+ * `flatbuffers_common_reader.h` and a builder requires
  * `flatbuffers_common_builder.h` in addition to the reader filers.  A
  * reader need no other source, but builders must link with the
  * `flatbuilder` library and include files in `include/flatbuffers`.
