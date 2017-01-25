@@ -14,9 +14,9 @@ cp -r test/benchmark/benchmain/* ${TMP}
 cp -r test/benchmark/benchflatccjson/* ${TMP}
 cd ${TMP}
 $CC -g -std=c11 -I ${ROOT}/include benchflatccjson.c \
-    ${ROOT}/lib/libflatccrt_d.a -o benchflatccjson_d
+    ${ROOT}/lib/libflatccrt-static_d.a -o benchflatccjson_d
 $CC -O3 -DNDEBUG -std=c11 -I ${ROOT}/include benchflatccjson.c \
-    ${ROOT}/lib/libflatccrt.a -o benchflatccjson
+    ${ROOT}/lib/libflatccrt-static.a -o benchflatccjson
 echo "running flatbench flatcc json parse and print for C (debug)"
 ./benchflatccjson_d
 echo "running flatbench flatcc json parse and print for C (optimized)"
