@@ -696,40 +696,6 @@ static void parse_type(fb_parser_t *P, fb_value_t *v)
     }
 }
 
-/* ':' must already be matched */
-static void parse_attr_type(fb_parser_t *P, fb_value_t *v)
-{
-    switch (P->token->id) {
-    case tok_kw_byte:
-    case tok_kw_short:
-    case tok_kw_int:
-    case tok_kw_long:
-        v->type = vt_int;
-        break;
-    case tok_kw_ubyte:
-    case tok_kw_ushort:
-    case tok_kw_uint:
-    case tok_kw_ulong:
-        v->type = vt_uint;
-        break;
-    case tok_kw_bool:
-        v->type = vt_bool;
-        break;
-    case tok_kw_float:
-    case tok_kw_double:
-        v->type = vt_float;
-        break;
-    case tok_kw_string:
-        v->type = vt_string;
-        break;
-    default:
-        v->type = vt_invalid;
-        error_tok(P, P->token, "invalid attribute type specifier");
-        break;
-    }
-    next(P);
-}
-
 static fb_metadata_t *parse_metadata(fb_parser_t *P)
 {
     fb_token_t *t, *t0;
@@ -1021,7 +987,26 @@ static void parse_include(fb_parser_t *P)
 static void parse_attribute(fb_parser_t *P, fb_attribute_t *a)
 {
     static unsigned nattrs = KNOWN_ATTR_COUNT;
+    unsigned char known[] = {
+         [vt_missing] = 1,
+         [vt_invalid] = 1,
+         [vt_string] = 1,
+         [vt_float] = 1,
+         [vt_int] = 1,
+         [vt_uint] = 1,
+         [vt_bool] = 1,
+         [vt_vector_type] = 1,
+         [vt_scalar_type] = 1,
+         [vt_vector_string_type] = 1,
+         [vt_string_type] = 1,
+         [vt_vector_type_ref] = 1,
+         [vt_type_ref] = 1,
+         [vt_name_ref] = 1,
+         [vt_compound_type_ref] = 1,
+         [vt_vector_compound_type_ref] = 1,
+    };
     fb_token_t *t = P->token;
+    int got_semicolon = 0;
 
     if (t->text[0] == '"') {
         if (match(P, LEX_TOK_STRING_BEGIN, "attribute expected string literal")) {
@@ -1031,6 +1016,7 @@ static void parse_attribute(fb_parser_t *P, fb_attribute_t *a)
             }
         }
     } else {
+        /* --- parse attribute NAME */
         if (!(t = match(P, LEX_TOK_ID, "attribute expected identifier"))) {
             goto fail;
         }
@@ -1038,22 +1024,40 @@ static void parse_attribute(fb_parser_t *P, fb_attribute_t *a)
         a->name.name.s.s = (char *)t->text;
         a->name.name.s.len = t->len;
         a->name.name.type = vt_string;
+
+        /* --- parse attribute TYPE */
         a->type.type = vt_missing;
-        if (optional(P, ':')) {
-            parse_attr_type(P, &a->type);
-            if (optional(P, '=')) {
-                if (a->type.type == vt_string &&
-                    match(P, LEX_TOK_STRING_BEGIN, "attribute initializer expected string literal")) {
-                    parse_string_literal(P, &a->type);
-                } else {
-                    parse_value(P, &a->type, allow_id_value, "attribute initializer must be of scalar type");
-                }
-            }
+        if (optional(P, ';')) {
+            got_semicolon = 1;
+            goto done;
         }
-        if (a->type.type > vt_invalid && nattrs < FLATCC_ATTR_MAX)
+        if (optional(P, ':')) {
+            parse_type(P, &a->type);
+        }
+
+        /* --- parse attribute METADATA */
+	fb_metadata_t *md = parse_metadata(P);
+        (void)md;
+	/* XXX "missing" */
+	/* XXX "invalid" */
+	/* XXX "known" or "unknown" */
+
+        /* --- parse attribute DEFAULT */
+        if (optional(P, ';')) {
+            got_semicolon = 1;
+            goto done;
+        }
+        if (optional(P, '=')) {
+            parse_value(P, &a->type, allow_string_value|allow_id_value, "attribute initializer illegal");
+        }
+done:
+        /* --- expose only permitted attribute types. */
+        if (known[a->type.type] && nattrs < FLATCC_ATTR_MAX) {
             a->known = nattrs++;
+        }
     }
-    match(P, ';', "attribute expected ';'");
+    if (!got_semicolon)
+        match(P, ';', "attribute expected ';'");
     return;
 fail:
     recover2(P, ';', 1, '}', 0);
