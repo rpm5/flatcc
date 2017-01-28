@@ -708,6 +708,7 @@ static fb_metadata_t *parse_metadata(fb_parser_t *P)
     for (;;) {
         fb_add_metadata(P, &md);
         md->ident = t;
+        md->value.type = vt_missing;
         if (optional(P, ':')) {
             parse_value(P, &md->value, allow_string_value, "scalar or string value expected");
         }
@@ -987,23 +988,24 @@ static void parse_include(fb_parser_t *P)
 static void parse_attribute(fb_parser_t *P, fb_attribute_t *a)
 {
     static unsigned nattrs = KNOWN_ATTR_COUNT;
+    int makeknown = 0;
     unsigned char known[] = {
-         [vt_missing] = 1,
-         [vt_invalid] = 1,
-         [vt_string] = 1,
-         [vt_float] = 1,
-         [vt_int] = 1,
-         [vt_uint] = 1,
-         [vt_bool] = 1,
-         [vt_vector_type] = 1,
-         [vt_scalar_type] = 1,
-         [vt_vector_string_type] = 1,
-         [vt_string_type] = 1,
-         [vt_vector_type_ref] = 1,
-         [vt_type_ref] = 1,
-         [vt_name_ref] = 1,
-         [vt_compound_type_ref] = 1,
-         [vt_vector_compound_type_ref] = 1,
+         [vt_missing] = 1,		/* internal */
+         [vt_invalid] = 1,		/* internal */
+         [vt_string] = 1,		/* XXX internal -> vt_string_type */
+         [vt_float] = 0,
+         [vt_int] = 0,
+         [vt_uint] = 1,			/* internal */
+         [vt_bool] = 0,
+         [vt_vector_type] = 0,
+         [vt_scalar_type] = 1,		/* custom */
+         [vt_vector_string_type] = 0,
+         [vt_string_type] = 1,		/* internal/custom */
+         [vt_vector_type_ref] = 0,
+         [vt_type_ref] = 0,
+         [vt_name_ref] = 0,
+         [vt_compound_type_ref] = 0,
+         [vt_vector_compound_type_ref] = 0,
     };
     fb_token_t *t = P->token;
     int got_semicolon = 0;
@@ -1052,7 +1054,7 @@ static void parse_attribute(fb_parser_t *P, fb_attribute_t *a)
         }
 done:
         /* --- expose only permitted attribute types. */
-        if (known[a->type.type] && nattrs < FLATCC_ATTR_MAX) {
+        if (makeknown && known[a->type.type] && nattrs < FLATCC_ATTR_MAX) {
             a->known = nattrs++;
         }
     }

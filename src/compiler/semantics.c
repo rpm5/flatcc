@@ -5,6 +5,107 @@
 #include "parser.h"
 #include "coerce.h"
 
+/*==============================================================*/
+#ifdef	NOTYET_DEBUGGING
+void pr_token(const char *msg, fb_token_t *t)
+{
+    if (msg)
+        fprintf(stderr, "----- %s\n", msg);
+fprintf(stderr, "    text: %.*s\n", (int)t->len, t->text);
+fprintf(stderr, "     len: %ld\n", t->len);
+fprintf(stderr, " linenum: %ld\n", t->linenum);
+fprintf(stderr, "     pos: %ld\n", t->pos);
+fprintf(stderr, "      id: %ld\n", t->id);
+}
+
+void pr_value(const char *msg, fb_value_t *v)
+{
+    if (msg)
+        fprintf(stderr, "%s", msg);
+    switch (v->type) {
+    default:
+fprintf(stderr, "unknown(%d,%p)", v->type, v->t);
+        break;
+    case vt_missing:
+fprintf(stderr, "missing(%p)", v->t);
+        break;
+    case vt_invalid:
+fprintf(stderr, "invalid(%p)", v->t);
+        break;
+    case vt_string:
+fprintf(stderr, "string = \"%.*s\"", v->s.len, v->s.s);
+        break;
+    case vt_float:
+fprintf(stderr, "float = %g", (double)v->f);
+        break;
+    case vt_int:
+fprintf(stderr, "int = %lld", (long long)v->i);
+        break;
+    case vt_uint:
+fprintf(stderr, "uint = %llu", (unsigned long long)v->u);
+        break;
+    case vt_bool:
+fprintf(stderr, "bool = %s", (v->b ? "TRUE" : "FALSE"));
+        break;
+    case vt_vector_type:
+fprintf(stderr, "[type(%p)]", v->t);
+        break;
+    case vt_scalar_type:
+fprintf(stderr, "scalar_type(%p)", v->t);
+        break;
+    case vt_vector_string_type:
+fprintf(stderr, "[string_type(%p)]", v->t);
+        break;
+    case vt_string_type:
+fprintf(stderr, "string_type(%p)", v->t);
+        break;
+    case vt_vector_type_ref:
+fprintf(stderr, "[type_ref(=%.*s)]", (int)v->ref->ident->len, v->ref->ident->text);
+        break;
+    case vt_type_ref:
+fprintf(stderr, "type_ref(=%.*s)", (int)v->ref->ident->len, v->ref->ident->text);
+        break;
+    case vt_name_ref:
+fprintf(stderr, "name_ref(=%.*s)", (int)v->ref->ident->len, v->ref->ident->text);
+        break;
+    case vt_compound_type_ref:
+fprintf(stderr, "compound_type_ref(=%.*s)", (int)v->ref->ident->len, v->ref->ident->text);
+        break;
+    case vt_vector_compound_type_ref:
+fprintf(stderr, "[compound_type_ref(=%.*s)]", (int)v->ref->ident->len, v->ref->ident->text);
+        break;
+    }
+fprintf(stderr, ";\n");
+}
+
+void pr_attribute(const char *msg, fb_attribute_t *a)
+{
+    char s[256];
+    size_t ns = sizeof(s);
+
+    if (msg)
+        fprintf(stderr, "%s: attribute ", msg);
+    snprintf(s, ns, "%.*s:", (int)a->name.name.s.len, a->name.name.s.s);
+    s[ns-1] = '\0';
+    pr_value(s, &a->type);
+}
+
+void pr_metadata(const char *msg, fb_metadata_t *m)
+{
+#ifdef	NOTYET
+    char s[256];
+    size_t ns = sizeof(s);
+
+    if (msg)
+        fprintf(stderr, "%s: metadata ", msg);
+    snprintf(s, ns, "%.*s:", (int)a->name.name.s.len, a->name.name.s.s);
+    s[ns-1] = '\0';
+#endif
+    pr_value(msg, &m->value);
+}
+/*==============================================================*/
+#endif	/* NOTYET_DEBUGGING */
+
 /* Same order as enum! */
 static const char *fb_known_attribute_names[] = {
     "",
@@ -306,6 +407,10 @@ static void install_known_attributes(fb_parser_t *P)
         a->name.name.type = vt_string;
         a->name.link = 0;
         a->type.type = fb_known_attribute_types[i];
+#ifdef	NOTYET_DEBUGGING
+        if (a->type.type == vt_string)
+	    a->type.type = vt_string_type;
+#endif
         if ((a = (fb_attribute_t *)define_fb_name(&P->schema.root_schema->attribute_index, &a->name))) {
             /*
              * If the user alredy defined the attribute, keep that instead.
